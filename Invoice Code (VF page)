@@ -1,0 +1,160 @@
+<apex:page standardController="Invoice__c"  showHeader="FALSE" standardStylesheets="false" renderas="pdf">
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8"/>
+            <title>DotNetTec - Invoice html template bootstrap</title>
+            <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/css/bootstrap.css'/>
+        </head>
+    </html>
+    <style type="text/css">
+        table{ }
+        table td{ padding: 2px 5px; border:1px solid; font-size: 14px; }
+        table th{ padding: 2px 5px;border:1px solid; }
+        
+        .blue-bg{ background: #305496; }
+        .secondary{ background: #D9E1F2; }
+        .primaryBg{ background: #B4C6E7; }
+        .border-none{ border:none !important; }
+        .bl-none{border-left:none !important; }
+        .br-none{border-right:none !important; }
+        .bt-none{border-top:none !important; }
+        .bb-none{border-bottom:none !important; }
+        .bx-none{ border-top: 0px !important; border-bottom: 0px !important; }
+        .by-none{ border-left: 0px !important; border-right: 0px !important; }
+        
+        .bottom-border{border-bottom:1px solid !important; }
+        .border-left{border-left:1px solid !important; }
+        .border-right{border-right:1px solid !important; }
+        .border-top{border-top:1px solid !important; }
+        
+        
+        .px-none{ padding-top: 0px; padding-bottom: 0px; }
+        .py-none{ padding-left: 0px; padding-right: 0px; }
+        .pt-none{ padding-top: 0px; }
+        .pb-none{ padding-bottom: 0px; }
+        .pl-none{ padding-left: 0px; }
+        .pr-none{ padding-right: 0px; }
+        .pd-none { padding: 0px; }
+    </style>
+    <div class="header">
+        <img src="{!$Resource.Arlogo}" width="100%" />
+    </div>
+    
+    
+    <!--<apex:variable value="{!1}" var="count" />
+<font size="2" face="Courier New" >
+<apex:repeat var="lineitem" value="{!Invoice__c.Order_Products__r}">
+<tr>
+<th id="name">S.N</th>
+<th id="father">Product Name</th>
+<th id="mother">Quantity</th>
+<th id="phone">Unit Price</th>
+<th id="phone">Total Price</th>
+<th id="phone">Discount Percentage</th>
+<th id="phone">Discount in rupees </th>
+<th id="phone">Before GST</th>
+<th id="phone">After GST</th>
+<th id="phone">Grand Total</th>
+</tr>
+
+<tr>
+<td>{!count}
+<apex:variable value="{!count+1}" var="count" /> 
+</td>
+<td align="right"><apex:outputfield value="{!lineitem.Product_Name__c}" /></td>
+<td align="right"><apex:outputfield value="{!lineitem.Quantity__c}" /></td> 
+
+<td align="right"><apex:outputfield value="{!lineitem.Unit_Price__c}" /></td>
+<td align="right"><apex:outputfield value="{!lineitem.Total_Price__c}" /></td>
+<td align="right"><apex:outputfield value="{!lineitem.Discount_Percentage__c}" /></td>
+<td align="right"><apex:outputfield value="{!lineitem.Discount_In_Rupees__c}" /></td>
+<td align="right"><apex:outputfield value="{!lineitem.Before_GST__c}" /></td>
+<td align="right"><apex:outputfield value="{!lineitem.After_GST__c}" /></td>
+<td align="right"><apex:outputfield value="{!lineitem.Grand_Total__c}" /></td>
+</tr>
+</apex:repeat>
+</font>-->
+    <body>
+        
+        
+        
+        <table valign="top"  width="100%" border="0px" cellspacing="0" cellpadding="0" style="max-width: 1000px; margin: 0 auto;" class="border-none">
+            
+            <tbody>
+                
+                <tr>
+                    <td class="border-none">
+                        
+                        <table width="100%" border="0px" cellspacing="0" cellpadding="0" class="border-none">
+                            <tbody>
+                                <tr>
+                                    <td class="border-none">
+                                        <table width="100%" border="0px" cellspacing="0" cellpadding="0" class="border-none">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="border-none" style="text-align: center; font-size: 16px; text-align: center; font-weight: bold;">Invoice</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border-none" style="height: 40px;">&nbsp;</td>
+                                                </tr>
+                                                
+                                                
+                                                
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="pd-none">
+                                        <table width="100%" border="0px" cellspacing="0" cellpadding="0" align="top" >
+                                            <tbody>
+                                                <tr>
+                                                    <td class="border-none pd-none" style="max-width: 800px;">
+                                                        <table width="100%" border="0px" cellspacing="0" cellpadding="0">
+                                                            <thead>
+                                                                <tr>
+                                                                    <td class="border-none bottom-border"  style="line-height: 20px;">
+                                                                        <p style="font-weight: bold; border:0px; font-size: 18px; margin-bottom: 0px;">Ganesh Enterprises</p>
+                                                                        
+                                                                        Plot No-02, Near Satguru Dharam Kanta   <br/>
+                                                                        Transport Nagar, Korba-495677 <br/>
+                                                                        Chhattishgarh <br/>
+                                                                        Chhattishgarh-495677 ,India <br/>
+                                                                        GSTIn/UIN: 22AAG39A2ZT <br/>
+                                                                        State Name : Chhattisgarh, Code : 22 <br/>
+                                                                        E-Mail : ganesh.korba@gmail.com
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="border-none bottom-border"  style="line-height: 20px;">
+                                                                        Consignee (Ship to)  <br/>
+                                                                        <p style="font-weight: bold; border:0px; font-size: 18px; margin-bottom: 0px;">{!Invoice__c.Account_Name__c},<br/>
+                                                                            
+                                                                        </p>
+                                                                        Delivery at-{!Invoice__c.Order__r.Consignee_Ship_to__c}   
+                                                                        
+                                                                        
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="border-none " style="line-height: 20px;">
+                                                                        Buyer (Bill to)  <br/>
+                                                                        <p style="font-weight: bold; border:0px; font-size: 18px; margin-bottom: 0px;">{!Invoice__c.Account_Name__c},</p>
+                                                                        {!Invoice__c.Order__r.Buyer_Bill_to__c }
+                                                                        
+                                                                        
+                                                                    </td>
+                                                                </tr>
+                                                                
+                                                                
+                                                                
+                                                                
+                                                            </thead>
+                                                        </table>
+                                                    </td>
+                                                    
