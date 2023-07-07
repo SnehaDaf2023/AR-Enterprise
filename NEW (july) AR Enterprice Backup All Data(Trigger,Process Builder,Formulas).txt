@@ -1,0 +1,687 @@
+AR Enterprise
+
+
+Vertical 1
+1st Part
+Challenge 1: Pending Orders 
+To recover all pending orders. Pop up notifications and report of pending orders ++
+Object: - Order (Standard Object)
+Fields: - 1) Order Start Date (Standard)	
+	 2) Order End Date (Standard)
+	 3) Status (Standard)
+4) Reasons for Order Pendency (Custom Picklist)
+5)  Report (Report of pending order)
+
+Example: - 
+If Order Start Date is 2 July 2022 & Order End Date is 4 July 2022 that time Status Automatically Change that     is Pending, we get one Notification That is your order is pending.
+Today's date is less than order end date then you have to give one notification that is your order is pending.
+Today's date is Greater than order end date then you Do not have to get any notification.
+If order Status is pending then you have to mention reason for why order is pending and this will show in you report.
+
+Steps: -
+Go to Orders Tab
+Select New
+Select Account Name, Order Start Date, Order End date, Status, Contract Number 
+Click Save
+
+
+Report: - Report of Pending Orders
+Whenever you want to check all the details of pending orders then you can check in report also create dashboard.
+
+ 
+Dashboard: -   Dashboard of Pending Payments, Pending Orders, Pending Items & Location Tracker
+
+Process Builder: - Send_Order_Pending_Notification 
+ 
+
+Steps: -
+1)
+ 
+2)
+ 
+3)
+ 
+4)
+ 
+5)
+ 
+6)
+ 
+
+Note: Go to the Bell Icon and you can see notification
+
+
+Challenge 2: Delivery management (Set up route): 
+ For different different places
+
+Object: -1) Root Location (Custom Object)
+                2) Order (Standard) 
+
+Fields: - 1) Root Location (Custom) (API Name :- Name)
+               2)  Weight Capacity (Kg) (Custom)
+              3) Map Location (Custom)
+
+Use: - 
+Whenever we can create order record then we want to select root location field for showing that this order is delivered by this this root.
+	
+	
+	
+
+
+Challenge 3: Pending Items 
+ If someone orders 100 items. We only delivered 80 items at that moment. 20 Items are remaining. Pending List item should be show for the particular person/party
+Object: - Order Product (Standard)
+Fields: - 1) Quantity	(Standard)
+ 2) Delivery Items	 (Custom)
+ 3) Pending Item (Custom Field - Formula)
+
+Example: - 
+- Suppose quantity is 500 and you have to deliver 300 items then pending item will be show automatically.
+Steps: -
+Go To Order Tab
+Related
+Add Product
+Select Products
+Add Quantity
+Add Delivery Items
+Save
+
+
+Report: - List of Pending Items
+Report is generated for showing Pending Item. Report will be sent to the Owner Mail Id.
+Report will daily show at 11 AM 
+
+
+Challenge 4: Payment pending notification 
+ After 12 to 15 days (Also, report can show all pending payments)
+
+Object: - Order (Standard)
+
+Fields: - 1) Total Order Amount (Standard) 
+ 2) Advance Amount (Custom) (API Name: - Paid_Amount__c)
+3) Remaining Amount (Custom)
+4) Date of Delivery (Custom)
+5) Payment Pending Days (Custom)
+
+Report: - Report of all Pending Payments
+Whenever you want to check all the details of pending payments then you can check in report also create dashboard.
+ 
+Note: As well as we can check Report for which customer's payment balance and his name.
+
+
+Challenge 5: Stock challenge(operational) 
+Notification for re-stock to the particular buffer stock.
+Trigger: - Stock Availability
+
+Trigger Code: - 
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85	triggerÿStockAvailabilityÿonÿOrderItemÿ(afterÿinsert,ÿafterÿupdate,ÿafterÿdelete)ÿ{
+ÿÿÿÿlist<id>pid=newÿlist<id>();
+ÿÿÿÿ
+ÿÿÿÿif(trigger.isinsert){
+ÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.new){
+ÿÿÿÿÿÿÿÿÿÿÿÿpid.add(co.Product2Id);
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿmap<id,Product2>ÿpr=newÿmap<id,Product2>([selectÿStock_Quantity__cÿfromÿProduct2ÿwhereÿidÿin:pid]);
+ÿÿÿÿÿÿÿÿif(trigger.isafter)ÿ{
+ÿÿÿÿÿÿÿÿÿÿÿÿList<Product2>ÿproList=ÿnewÿList<Product2>();
+ÿÿÿÿÿÿÿÿÿÿÿÿtry{
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.new){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿProduct2ÿp1=pr.get(co.Product2Id);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.Stock_Quantity__c=p1.Stock_Quantity__c-co.Quantity;
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿproList.add(p1);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿupdateÿproList;
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿcatch(Exceptionÿe){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿsystem.debug(e.getMessage());
+ÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿ}
+ÿÿÿÿ//DELETINGÿORDER
+ÿÿÿÿif(trigger.isdelete){
+ÿÿÿÿÿÿÿÿList<Product2>ÿproList=ÿnewÿList<Product2>();
+ÿÿÿÿÿÿÿÿtry{
+ÿÿÿÿÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.old){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿpid.add(co.Product2Id);
+ÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿmap<id,Product2>ÿpr=newÿmap<id,Product2>([selectÿStock_Quantity__cÿfromÿProduct2ÿwhereÿidÿin:pid]);
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.old){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿProduct2ÿp1=pr.get(co.Product2Id);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.Stock_Quantity__c=p1.Stock_Quantity__c+co.Quantity;
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿproList.add(p1);
+ÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿupdateÿproList;
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿcatch(Exceptionÿe){
+ÿÿÿÿÿÿÿÿÿÿÿÿsystem.debug(e.getMessage());
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿ}
+ÿÿÿÿ//UPDATEÿTRIGGER
+ÿÿÿÿ
+ÿÿÿÿif(trigger.isafter&&trigger.isupdate)ÿ{
+ÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.newÿ){
+ÿÿÿÿÿÿÿÿÿÿÿÿpid.add(co.Product2Id);
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿmap<id,Product2>pr=newÿmap<id,Product2>([selectÿStock_Quantity__cÿfromÿProduct2ÿwhereÿidÿin:pid]);
+ÿÿÿÿÿÿÿÿset<id>oid=trigger.newmap.keyset();
+ÿÿÿÿÿÿÿÿ//ÿÿÿList<Product2>ÿproList=ÿnewÿList<Product2>();
+ÿÿÿÿÿÿÿÿtry{
+ÿÿÿÿÿÿÿÿÿÿÿÿfor(idÿco:oid){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOrderItemÿco1=trigger.newmap.get(co);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿProduct2ÿp1=pr.get(co1.Product2Id);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOrderItemÿco2=trigger.oldmap.get(co);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿif(co1.Quantity<co2.Quantity)ÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ{ÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.Stock_Quantity__c=p1.Stock_Quantity__c+(co2.Quantity-co1.Quantity);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿif(co1.Quantity>co2.Quantityÿ)
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ{ÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.Stock_Quantity__c=p1.Stock_Quantity__c-(co1.Quantity-co2ÿ.Quantity);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿ}ÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿupdateÿpr.values();
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿcatch(Exceptionÿe){
+ÿÿÿÿÿÿÿÿÿÿÿÿsystem.debug(e.getMessage());
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿ}
+}
+
+
+
+
+ 
+
+ 
+
+ 
+Test Class: - TestStockAvailability
+Test Class Code: -
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75	@isTest
+publicÿclassÿTestStockAvailabilityÿ{
+ÿÿÿÿ
+ÿÿÿÿpublicÿstaticÿtestMethodÿvoidÿtestorderproduct(){
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿAccount
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿAccountÿaÿ=ÿnewÿAccount();
+ÿÿÿÿÿÿÿÿa.Nameÿ=ÿ'TestÿAccount';
+ÿÿÿÿÿÿÿÿinsertÿa;
+ÿÿÿÿÿÿÿÿContractÿcont=ÿnewÿContract(AccountId=a.id,StartDate=system.today(),Status='Draft',ContractTerm=3);
+ÿÿÿÿÿÿÿÿinsertÿcont;
+ÿÿÿÿÿÿÿÿcont.Status='Activated';
+ÿÿÿÿÿÿÿÿupdateÿcont;
+ÿÿÿÿÿÿÿÿRoot_Location__cÿRL=ÿnewÿRoot_Location__c(Name='NewÿDelhiÿtoÿFaridabad');
+ÿÿÿÿÿÿÿÿinsertÿRL;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿProduct
+ÿÿÿÿÿÿÿÿProduct2ÿpÿ=ÿnewÿProduct2();
+ÿÿÿÿÿÿÿÿp.Nameÿ=ÿ'ÿTestÿProductÿ';
+ÿÿÿÿÿÿÿÿp.Description='TestÿProductÿEntryÿ1';
+ÿÿÿÿÿÿÿÿp.productCodeÿ=ÿ'ABC';
+ÿÿÿÿÿÿÿÿp.isActiveÿ=ÿtrue;
+ÿÿÿÿÿÿÿÿp.Stock_Quantity__c=100;
+ÿÿÿÿÿÿÿÿinsertÿp;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿPricebookEntry
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿPricebookEntryÿstandardPriceÿ=ÿnewÿPricebookEntry();
+ÿÿÿÿÿÿÿÿstandardPrice.Pricebook2Idÿ=ÿTest.getStandardPricebookId();
+ÿÿÿÿÿÿÿÿstandardPrice.Product2Idÿ=ÿp.Id;
+ÿÿÿÿÿÿÿÿstandardPrice.UnitPriceÿ=ÿ1;
+ÿÿÿÿÿÿÿÿstandardPrice.IsActiveÿ=ÿtrue;
+ÿÿÿÿÿÿÿ//ÿstandardPrice.UseStandardPriceÿ=ÿfalse;
+ÿÿÿÿÿÿÿÿinsertÿstandardPriceÿ;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿOrder
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿOrderÿoÿ=ÿnewÿOrder();
+ÿÿÿÿÿÿÿÿo.Nameÿ=ÿ'TestÿOrderÿ';
+ÿÿÿÿÿÿÿÿo.Statusÿ=ÿ'Draft';
+ÿÿÿÿÿÿÿÿo.EffectiveDateÿ=ÿsystem.today();
+ÿÿÿÿÿÿÿÿo.EndDateÿ=ÿsystem.today()ÿ+ÿ24;
+ÿÿÿÿÿÿÿÿo.AccountIdÿ=ÿa.id;
+ÿÿÿÿÿÿÿÿo.ContractId=cont.Id;
+ÿÿÿÿÿÿÿÿo.Paid_Amount__c=5;
+ÿÿÿÿÿÿÿo.Pricebook2Idÿ=ÿÿTest.getStandardPricebookId();
+ÿÿÿÿÿÿÿÿo.Root_Location__c=RL.Id;
+ÿÿÿÿÿÿÿÿÿÿÿÿinsertÿo;
+ÿÿÿÿÿÿÿÿo.Status='Cancel';
+ÿÿÿÿÿÿÿÿupdateÿo;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿOrderÿItem
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿOrderItemÿiÿ=ÿnewÿOrderItem();
+ÿÿÿÿÿÿÿÿi.OrderIdÿ=ÿo.id;
+ÿÿÿÿÿÿÿÿi.Quantityÿ=ÿ5;
+ÿÿÿÿÿÿÿÿi.UnitPriceÿ=ÿ67;
+ÿÿÿÿÿÿÿÿi.Product2Idÿ=ÿp.id;
+ÿÿÿÿÿÿÿÿi.ServiceDate=Date.today();
+ÿÿÿÿÿÿÿÿi.EndDate=system.today()+5;
+ÿÿÿÿÿÿÿi.PricebookEntryId=standardPrice.Id;
+ÿÿÿÿÿÿÿÿinsertÿi;
+ÿÿÿÿÿÿÿÿi.Quantity=20;
+ÿÿÿÿÿÿÿÿupdateÿi;
+ÿÿÿÿÿÿÿÿi.Quantity=10;
+ÿÿÿÿÿÿÿÿupdateÿi;
+ÿÿÿÿÿÿÿOrderItemÿort=[selectÿid,Product2IdÿfromÿOrderItem];
+ÿÿÿÿÿÿÿÿdeleteÿort;
+ÿÿÿÿÿÿÿÿProduct2ÿppt=[Selectÿid,Stock_Quantity__cÿfromÿProduct2];
+ÿÿÿÿÿÿÿÿSystem.assertEquals(ppt.Stock_Quantity__c,ÿ135);
+
+ÿÿÿÿ}
+}
+
+ 
+
+ 
+
+Object: - Product, order product (Standard) 
+
+Fields: - 1) Stock Quantity
+ 	 2) Quantity (Standard) 
+Example: - 
+If Stock is 100 and we have order 10 Products then it will be subtracted.
+If Stock is 90 and Customer change quantity and he has order only 5 Items so that 5 remaining items will go back and add to the Product, now product stock quantity is 95.
+If any product is deleted from order product, then that remaining 5 also will go and add in the product object and show in the stock quantity field. 
+
+New Task
+Stock: 1: To continue dispatch (can show negative)
+Trigger: - Stock Availability
+
+ - If the stock is 20 and then order is 100 then stock quantity will show -80 (negative)
+
+Steps: -
+Go to order object
+New
+Go to Related 
+Add Order Product
+Select Products then add quantity (any number)
+Save
+Click on Selected Product
+check the stock quantity values
+
+Process Builder: - Send Notification to Re-Stock Product
+ 
+Steps: -
+1)
+ 
+2)
+ 
+3)
+ 
+
+4)
+ 
+5)
+ 
+6)
+ 
+7)
+ 
+Object: - Product
+Fields: - -1) Stock Quantity (Custom)
+ 	 2) Quantity (Standard) 
+ 3) Stock Status (Custom)
+
+Work: -
+If Stock Quantity is greater than 100 then Stock Status is automatically change that is Stock Available.
+If Stock Quantity is Less than 100 -51 then Stock Status is automatically change that is Re-Stock.
+If Stock Quantity is Less than 50 then Stock Status is automatically change that is Out of Stock.
+
+Steps: -
+Go to Product object
+New
+Add Stock Quantity
+Save
+
+Note: - You can see that which stock is available, out of stock or restock in the notification 
+
+
+2nd Part 
+
+Product & Price: Set up products along with prices and discount accordingly 
+Challenge 1: Order should be accepted on the basis of price which we have mentioned in the Salesforce. If someone try to order differently, the error should generate and not allow to save order.
+Object: - Order Product (Standard) 
+Fields: - 1) Quantity (Standard) 
+	 2) Unit Price (Standard) 
+ 3) Discount in Rupees (Custom)
+Formula: -
+ 4)  Discount Percentage (Custom)
+ 5)  Total Price (Standard) 
+ 6) Grand Total (API Name: - Grand_Total_With_Discount__c) (Custom)
+ 7) After GST (Custom)
+ 8) Before GST (Custom)
+ 9)  Weight (Kg) (Custom)
+10) Total Weight (Kg) (Custom)
+
+
+Example: - 
+Quantity & Unit Price Calculation Shows in Total Price 
+Total Price & Discount in Rupees /Discount Percentage Calculation Shows in Grand Total 
+Total Price, Discount in Rupees /Discount Percentage & After GST/Before GST Calculation Shows in Grand Total
+According to quantity we can assume weight of product.
+Quantity & Weight Calculation Shows in Total Weight (Kg)
+
+
+Whenever Dealer Wants to add discount & GST in Total Price then all Calculation Shows in Grand Total
+Steps: -
+Go To Order Tab
+Create New Order
+Go to Related Tab
+Click on Add Product 
+Select Product Whatever You Want 
+Add Quantity in All Selected Product
+Click on Click on Selected Product
+Add Quantity & Unit Price 
+Click Save
+
+
+
+
+
+
+Vertical 2 
+Challenge 1: Site visit construction (How many sites visit in a day): 
+ Real time capture.
+Object: - 1) Account (Lwc Component) 
+	  2)  Location Tracker (Custom)
+
+Fields: - 1) Calculated Employee Time
+	  2) End Location
+  3) User
+  4) Start Time
+  5) Start Location
+  6) End Time
+
+- Google Map Integration
+
+Report & Dashboard: - Location Tracker Report
+
+
+
+Challenge 2: Next order expected: To build report where we can easily track (It will kind of daily report)
+Process Builder: - Follow Up for Old Clients
+
+
+Challenge 3: follow up for old clients (reference lead) - 
+send email automatically according to time duration also will show notification in salesforce for follow up to the old clients.
+Object: - Order
+Field: - Mobile No (Custom) 
+
+Process Builder: - Follow Up for Old Clients
+When remaining amount is 0 then status will be aromatically changed that is closed order.
+Process Builder: - Order Mobile field is updated
+when lead is converted into account. order mobile no field should be updated by account phone. 
+
+Report: - Follow Up for Old Clients
+Report will be shown by owner.
+After 15 days owner will receive mail.
+
+
+Challenge 4: set up references- set up picklist - 
+Object: - Lead
+Fields: - 1) Referred by Contact
+Referred By Lead
+
+Note: - this fields map with Contact, Account, Opportunity
+Exempla: -
+This work for Reference of Customers.
+
+Challenge 5: Employees target achievement: To build different reports for the particular employee. (Pending)
+
+
+
+
+
+
+
+
+Quotation management 
+
+Steps: -
+Go to Opportunity
+Select Opportunity Record (that you have select in order)
+Go to Related
+Add Products (whatever you selected in order product)
+Go to Quote tab
+Click on New Quote
+Create New Quote
+Select Order Number 
+Select Contact name
+Save
+Open this Quote Record
+Click on Button Section
+ 
+
+Click on Create Pdf button 
+Save and Email Quote
+Compose Email
+Send 
+
+If we provide customer email Id in that time whenever we created Lead then this customer received All Products detail by this pdf.
+	
+
+New Tasks
+Task 1: - Order Number in Series
+Object: - Order
+Field: - Order Number (Custom) 
+Trigger: - Order Number Series
+Sequence: - Year+Month+OrderNumber
+Example: - 
+Year- 2022
+Month- 07
+Order - 00000254
+So, this given information, system can automatically create new order number.
+Sequence of Order Number is 
+Last 2 digits of Year
+Last 1 digit of Month
+Last 5 digits of given order number
+
+Order Number look like this: - 22700054
+
+
+
+
+Task 2: - Trigger on cancellation of order-on-order object: 
+Object: - 1) Order
+	  2) Order product
+
+Field: - 1) Status 
+	2)Stock Quantity 
+
+Example: - 
+If the order product is cancelled then quantity will be put back in product object.
+
+Trigger: - addBackQuantityInProduct	
+
+
+Email Template: - 
+Object: - Contact
+
+ 
+
+
+ Report & Dashboards: - 
+
+Dashboard of Pending Payments, Pending Orders, Pending Items & Location Tracker
+
+
+
+ 
+
+ 
