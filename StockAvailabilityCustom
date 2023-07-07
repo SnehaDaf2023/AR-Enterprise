@@ -1,0 +1,83 @@
+ trigger StockAvailabilityCustom on Custom_Order_Product__c (after insert, after update, after delete) {
+    list<id>pid=new list<id>();
+    
+    if(trigger.isinsert){
+        for(Custom_Order_Product__c co:trigger.new){
+            pid.add(co.Product__c);
+        }
+        
+        map<id,Custom_Product__c> pr=new map<id,Custom_Product__c>([select Stock_Quantity__c from Custom_Product__c where id in:pid]);
+        if(trigger.isafter) {
+            List<Custom_Product__c> proList= new List<Custom_Product__c>();
+            try{
+                for(Custom_Order_Product__c co:trigger.new){
+                    Custom_Product__c p1=pr.get(co.Product__c);
+                    p1.Stock_Quantity__c=p1.Stock_Quantity__c-co.Quantity__c;
+                    proList.add(p1);
+                }
+                update proList;
+                
+            }
+            catch(Exception e){
+                system.debug(e.getMessage());
+            }
+        }
+    }
+    //DELETING ORDER
+    if(trigger.isdelete){
+        List<Custom_Product__c> proList= new List<Custom_Product__c>();
+        try{
+            for(Custom_Order_Product__c co:trigger.old){
+                pid.add(co.Product__c);
+            }
+            map<id,Custom_Product__c> pr=new map<id,Custom_Product__c>([select Stock_Quantity__c from Custom_Product__c where id in:pid]);
+            
+            for(Custom_Order_Product__c co:trigger.old){
+                Custom_Product__c p1=pr.get(co.Product__c);
+                p1.Stock_Quantity__c=p1.Stock_Quantity__c+co.Quantity__c;
+                
+                proList.add(p1);
+            }
+            update proList;
+            
+        }
+        catch(Exception e){
+            system.debug(e.getMessage());
+        }
+        
+    }
+    //UPDATE TRIGGER
+    
+    if(trigger.isafter&&trigger.isupdate) {
+        for(Custom_Order_Product__c co:trigger.new ){
+            pid.add(co.Product__c);
+        }
+        map<id,Custom_Product__c>pr=new map<id,Custom_Product__c>([select Stock_Quantity__c from Custom_Product__c where id in:pid]);
+        set<id>oid=trigger.newmap.keyset();
+        //   List<Product2> proList= new List<Product2>();
+        try{
+            for(id co:oid){
+                Custom_Order_Product__c co1=trigger.newmap.get(co);
+                Custom_Product__c p1=pr.get(co1.Product__c);
+                Custom_Order_Product__c co2=trigger.oldmap.get(co);
+                if(co1.Quantity__c<co2.Quantity__c) 
+                {    
+                    p1.Stock_Quantity__c=p1.Stock_Quantity__c+(co2.Quantity__c-co1.Quantity__c);
+                }
+                if(co1.Quantity__c>co2.Quantity__c )
+                {    
+                    p1.Stock_Quantity__c=p1.Stock_Quantity__c-(co1.Quantity__c-co2 .Quantity__c);
+                }
+                
+            }         
+            
+            update pr.values();
+            
+            
+        }
+        catch(Exception e){
+            system.debug(e.getMessage());
+        }
+     
+}
+}
