@@ -1,0 +1,462 @@
+		Backup For AR Enterprise Project
+
+Trigger: - 
+Challenge: - Stock challenge(operational)  
+Notification for re-stock to the particular buffer stock.
+
+Trigger Name: - Stock Availability
+ 	Object: - Order Item (Order Product)
+
+triggerÿStockAvailabilityÿonÿOrderItemÿ(afterÿinsert,ÿafterÿupdate,ÿafterÿdelete)ÿ{
+ÿÿÿÿlist<id>pid=newÿlist<id>();
+ÿÿÿÿ
+ÿÿÿÿif(trigger.isinsert){
+ÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.new){
+ÿÿÿÿÿÿÿÿÿÿÿÿpid.add(co.Product2Id);
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿmap<id,Product2>ÿpr=newÿmap<id,Product2>([selectÿStock_Quantity__cÿfromÿProduct2ÿwhereÿidÿin:pid]);
+ÿÿÿÿÿÿÿÿif(trigger.isafter)ÿ{
+ÿÿÿÿÿÿÿÿÿÿÿÿList<Product2>ÿproList=ÿnewÿList<Product2>();
+ÿÿÿÿÿÿÿÿÿÿÿÿtry{
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.new){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿProduct2ÿp1=pr.get(co.Product2Id);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.Stock_Quantity__c=p1.Stock_Quantity__c-co.Quantity;
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿproList.add(p1);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿupdateÿproList;
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿcatch(Exceptionÿe){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿsystem.debug(e.getMessage());
+ÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿ}
+ÿÿÿÿ//DELETINGÿORDER
+ÿÿÿÿif(trigger.isdelete){
+ÿÿÿÿÿÿÿÿList<Product2>ÿproList=ÿnewÿList<Product2>();
+ÿÿÿÿÿÿÿÿtry{
+ÿÿÿÿÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.old){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿpid.add(co.Product2Id);
+ÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿmap<id,Product2>ÿpr=newÿmap<id,Product2>([selectÿStock_Quantity__cÿfromÿProduct2ÿwhereÿidÿin:pid]);
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.old){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿProduct2ÿp1=pr.get(co.Product2Id);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.Stock_Quantity__c=p1.Stock_Quantity__c+co.Quantity;
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿproList.add(p1);
+ÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿupdateÿproList;
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿcatch(Exceptionÿe){
+ÿÿÿÿÿÿÿÿÿÿÿÿsystem.debug(e.getMessage());
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿ}
+ÿÿÿÿ//UPDATEÿTRIGGER
+ÿÿÿÿ
+ÿÿÿÿif(trigger.isafter&&trigger.isupdate)ÿ{
+ÿÿÿÿÿÿÿÿfor(OrderItemÿco:trigger.newÿ){
+ÿÿÿÿÿÿÿÿÿÿÿÿpid.add(co.Product2Id);
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿmap<id,Product2>pr=newÿmap<id,Product2>([selectÿStock_Quantity__cÿfromÿProduct2ÿwhereÿidÿin:pid]);
+ÿÿÿÿÿÿÿÿset<id>oid=trigger.newmap.keyset();
+ÿÿÿÿÿÿÿÿ//ÿÿÿList<Product2>ÿproList=ÿnewÿList<Product2>();
+ÿÿÿÿÿÿÿÿtry{
+ÿÿÿÿÿÿÿÿÿÿÿÿfor(idÿco:oid){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOrderItemÿco1=trigger.newmap.get(co);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿProduct2ÿp1=pr.get(co1.Product2Id);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOrderItemÿco2=trigger.oldmap.get(co);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿif(co1.Quantity<co2.Quantity)ÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ{ÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.Stock_Quantity__c=p1.Stock_Quantity__c+(co2.Quantity-co1.Quantity);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿif(co1.Quantity>co2.Quantityÿ)
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ{ÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.Stock_Quantity__c=p1.Stock_Quantity__c-(co1.Quantity-co2ÿ.Quantity);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿ}ÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿupdateÿpr.values();
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿcatch(Exceptionÿe){
+ÿÿÿÿÿÿÿÿÿÿÿÿsystem.debug(e.getMessage());
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿ}
+}
+
+
+ 
+
+Test Class: -1) TestStockAvailability
+
+@isTest
+publicÿclassÿTestStockAvailabilityÿ{
+ÿÿÿÿ
+ÿÿÿÿpublicÿstaticÿtestMethodÿvoidÿStockAvailabilityÿ(){
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿAccount
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿAccountÿaÿ=ÿnewÿAccount();
+ÿÿÿÿÿÿÿÿa.Nameÿ=ÿ'TestÿAccount';
+ÿÿÿÿÿÿÿÿinsertÿa;
+ÿÿÿÿÿÿÿÿContractÿcont=ÿnewÿContract(AccountId=a.id,StartDate=system.today(),Status='Draft',ContractTerm=3);
+ÿÿÿÿÿÿÿÿinsertÿcont;
+ÿÿÿÿÿÿÿÿcont.Status='Activated';
+ÿÿÿÿÿÿÿÿupdateÿcont;
+ÿÿÿÿÿÿÿÿRoot_Location__cÿRL=ÿnewÿRoot_Location__c(Name='NewÿDelhiÿtoÿFaridabad');
+ÿÿÿÿÿÿÿÿinsertÿRL;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿProduct
+ÿÿÿÿÿÿÿÿProduct2ÿpÿ=ÿnewÿProduct2();
+ÿÿÿÿÿÿÿÿp.Nameÿ=ÿ'ÿTestÿProductÿ';
+ÿÿÿÿÿÿÿÿp.Description='TestÿProductÿEntryÿ1';
+ÿÿÿÿÿÿÿÿp.productCodeÿ=ÿ'ABC';
+ÿÿÿÿÿÿÿÿp.isActiveÿ=ÿtrue;
+ÿÿÿÿÿÿÿÿp.Stock_Quantity__c=100;
+ÿÿÿÿÿÿÿÿinsertÿp;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿPricebookEntry
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿPricebookEntryÿstandardPriceÿ=ÿnewÿPricebookEntry();
+ÿÿÿÿÿÿÿÿstandardPrice.Pricebook2Idÿ=ÿTest.getStandardPricebookId();
+ÿÿÿÿÿÿÿÿstandardPrice.Product2Idÿ=ÿp.Id;
+ÿÿÿÿÿÿÿÿstandardPrice.UnitPriceÿ=ÿ1;
+ÿÿÿÿÿÿÿÿstandardPrice.IsActiveÿ=ÿtrue;
+ÿÿÿÿÿÿÿ//ÿstandardPrice.UseStandardPriceÿ=ÿfalse;
+ÿÿÿÿÿÿÿÿinsertÿstandardPriceÿ;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿOrder
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿOrderÿoÿ=ÿnewÿOrder();
+ÿÿÿÿÿÿÿÿo.Nameÿ=ÿ'TestÿOrderÿ';
+ÿÿÿÿÿÿÿÿo.Statusÿ=ÿ'Draft';
+ÿÿÿÿÿÿÿÿo.EffectiveDateÿ=ÿsystem.today();
+ÿÿÿÿÿÿÿÿo.EndDateÿ=ÿsystem.today()ÿ+ÿ24;
+ÿÿÿÿÿÿÿÿo.AccountIdÿ=ÿa.id;
+ÿÿÿÿÿÿÿÿo.ContractId=cont.Id;
+ÿÿÿÿÿÿÿÿo.Paid_Amount__c=5;
+ÿÿÿÿÿÿÿo.Pricebook2Idÿ=ÿÿTest.getStandardPricebookId();
+ÿÿÿÿÿÿÿÿo.Root_Location__c=RL.Id;
+ÿÿÿÿÿÿÿÿÿÿÿÿinsertÿo;
+ÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿOrderÿItem
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿOrderItemÿitemÿ=ÿnewÿOrderItem();
+ÿÿÿÿÿÿÿÿitem.OrderIdÿ=ÿo.id;
+ÿÿÿÿÿÿÿÿitem.Quantityÿ=ÿ5;
+ÿÿÿÿÿÿÿÿitem.UnitPriceÿ=ÿ67;
+ÿÿÿÿÿÿÿÿitem.Product2Idÿ=ÿp.id;
+ÿÿÿÿÿÿÿÿitem.ServiceDate=Date.today();
+ÿÿÿÿÿÿÿÿitem.EndDate=system.today()+5;
+ÿÿÿÿÿÿÿitem.PricebookEntryId=standardPrice.Id;
+ÿÿÿÿÿÿÿÿinsertÿitem;
+ÿÿÿÿÿÿÿÿitem.Quantity=20;
+ÿÿÿÿÿÿÿÿupdateÿitem;
+ÿÿÿÿÿÿÿÿitem.Quantity=10;
+ÿÿÿÿÿÿÿÿupdateÿitem;
+ÿÿÿÿÿÿÿOrderItemÿort=[selectÿid,Product2IdÿfromÿOrderItem];
+ÿÿÿÿÿÿÿÿdeleteÿort;
+ÿÿÿÿÿÿÿÿProduct2ÿppt=[Selectÿid,Stock_Quantity__cÿfromÿProduct2];
+ÿÿÿÿÿÿÿ//ÿSystem.assertEquals(ppt.Stock_Quantity__c,ÿ100);
+ÿÿÿÿÿÿÿÿ
+
+ÿÿÿÿ}
+}
+
+ 
+
+Note: - Below Both Triggers Are working on order object , Combine both triggers & written the same test class for both the triggers.
+
+Custom object  :-  Custom Order 
+Trigger:- StockAvailabilityCustom	
+ trigger StockAvailabilityCustom on Custom_Order_Product__c (after insert, after update, after delete) {
+    list<id>pid=new list<id>();
+    
+    if(trigger.isinsert){
+        for(Custom_Order_Product__c co:trigger.new){
+            pid.add(co.Product__c);
+        }
+        
+        map<id,Custom_Product__c> pr=new map<id,Custom_Product__c>([select Stock_Quantity__c from Custom_Product__c where id in:pid]);
+        if(trigger.isafter) {
+            List<Custom_Product__c> proList= new List<Custom_Product__c>();
+            try{
+                for(Custom_Order_Product__c co:trigger.new){
+                    Custom_Product__c p1=pr.get(co.Product__c);
+                    p1.Stock_Quantity__c=p1.Stock_Quantity__c-co.Quantity__c;
+                    proList.add(p1);
+                }
+                update proList;
+                
+            }
+            catch(Exception e){
+                system.debug(e.getMessage());
+            }
+        }
+    }
+    //DELETING ORDER
+    if(trigger.isdelete){
+        List<Custom_Product__c> proList= new List<Custom_Product__c>();
+        try{
+            for(Custom_Order_Product__c co:trigger.old){
+                pid.add(co.Product__c);
+            }
+            map<id,Custom_Product__c> pr=new map<id,Custom_Product__c>([select Stock_Quantity__c from Custom_Product__c where id in:pid]);
+            
+            for(Custom_Order_Product__c co:trigger.old){
+                Custom_Product__c p1=pr.get(co.Product__c);
+                p1.Stock_Quantity__c=p1.Stock_Quantity__c+co.Quantity__c;
+                
+                proList.add(p1);
+            }
+            update proList;
+            
+        }
+        catch(Exception e){
+            system.debug(e.getMessage());
+        }
+        
+    }
+    //UPDATE TRIGGER
+    
+    if(trigger.isafter&&trigger.isupdate) {
+        for(Custom_Order_Product__c co:trigger.new ){
+            pid.add(co.Product__c);
+        }
+        map<id,Custom_Product__c>pr=new map<id,Custom_Product__c>([select Stock_Quantity__c from Custom_Product__c where id in:pid]);
+        set<id>oid=trigger.newmap.keyset();
+        //   List<Product2> proList= new List<Product2>();
+        try{
+            for(id co:oid){
+                Custom_Order_Product__c co1=trigger.newmap.get(co);
+                Custom_Product__c p1=pr.get(co1.Product__c);
+                Custom_Order_Product__c co2=trigger.oldmap.get(co);
+                if(co1.Quantity__c<co2.Quantity__c) 
+                {    
+                    p1.Stock_Quantity__c=p1.Stock_Quantity__c+(co2.Quantity__c-co1.Quantity__c);
+                }
+                if(co1.Quantity__c>co2.Quantity__c )
+                {    
+                    p1.Stock_Quantity__c=p1.Stock_Quantity__c-(co1.Quantity__c-co2 .Quantity__c);
+                }
+                
+            }         
+            
+            update pr.values();
+            
+            
+        }
+        catch(Exception e){
+            system.debug(e.getMessage());
+        }
+     
+}
+}
+
+Test Class:- 
+
+
+Challenge: -  Order Number in Series
+2) Trigger Name: - OrderNumberSeries
+ 	     Object: - Orderÿ 
+		
+         triggerÿOrderNumberSeriesÿonÿOrderÿ(afterÿinsert)ÿ{
+ÿÿÿÿDateÿdÿ=ÿDate.today();
+ÿÿÿÿintegerÿyearÿ=ÿÿDate.Today().Year();
+ÿÿÿÿstringÿs1=string.valueof(year).right(2);
+ÿintegerÿmonthÿ=ÿÿDate.Today().Month();
+ÿÿÿÿstringÿs2=string.valueof(month);
+ÿÿÿ//ÿIntegerÿmonthÿ=ÿÿInteger.valueOf(String.valueOf(Date.Today().Month()).length(2));
+
+
+ÿÿÿÿ//DateTimeÿdtÿ=ÿDateTime.newInstance(d.year(),d.month(),ÿd.day());
+ÿÿÿ//ÿsystem.debug(d.format('MMMM'));ÿÿ
+ÿÿÿÿList<Order>ÿorderListÿ=ÿnewÿList<Order>();
+ÿÿÿÿfor(OrderÿupdateOrderNumber:trigger.new){
+ÿÿÿÿÿÿÿÿOrderÿnewOrder=newÿOrder();
+ÿÿÿÿÿÿÿÿsystem.debug('----'+updateOrderNumber.Order_No__c);
+ÿÿÿÿÿÿÿÿ//newOrder.ord_num__cÿ=dt.format('MMMM')+'-'+d.Year()+'-'+updateOrderNumber.Order_No__c;
+ÿÿÿÿÿÿÿÿÿÿnewOrder.ord_num__cÿ=s1+''+s2+''+updateOrderNumber.Order_No__c;
+ÿÿÿÿÿÿÿÿnewOrder.id=updateOrderNumber.id;
+ÿÿÿÿÿÿÿÿorderList.add(newOrder);
+ÿÿÿÿ}
+ÿÿÿÿupdateÿorderList;
+}
+
+ 
+
+Challenge: - Trigger on cancellation of order-on-order object
+
+3) Trigger: - addBackQuantityInProduct
+Object: - order
+
+//IFÿorderÿisÿdeletedÿrevertÿbackÿquantityÿfromÿorderItem toÿstockÿquantityÿinÿproduct.
+
+triggerÿaddBackQuantityInProductÿonÿOrderÿ(Afterÿupdate)ÿ{
+ÿÿÿÿif(trigger.isafterÿ&&ÿtrigger.isupdate)ÿ{
+ÿÿÿÿÿÿÿÿOrderHandler.stockQuantity(trigger.new,ÿtrigger.oldMap);
+}
+
+ 
+Apex Class: - OrderHandler
+
+	publicÿclassÿOrderHandler{
+ÿÿÿÿpublicÿstaticÿvoidÿstockQuantity(List<Order>ÿorderList,ÿMap<Id,Order>ÿoldMap){
+ÿÿÿÿÿÿÿÿÿÿÿÿList<id>ÿorderIdÿ=ÿnewÿList<id>();
+ÿÿÿ
+ÿÿÿÿÿÿÿÿfor(Orderÿco:orderList){
+ÿÿÿÿÿÿÿÿÿÿÿÿif(co.Status=='Cancel'){
+ÿÿÿÿÿÿÿÿÿÿÿÿorderId.add(co.Id);
+ÿÿÿÿÿÿÿÿ}ÿ
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿif(orderId!=Null){
+ÿÿÿÿÿÿÿÿSystem.debug('Ordersÿwhichÿareÿgettingÿdeletedÿ'+orderId);
+ÿÿÿÿÿÿÿÿList<OrderItem>ÿpreviousOrderItemsList=[selectÿId,ÿQuantity,Product2Id,ÿOrderId,ÿProduct2.Stock_Quantity__cÿfromÿOrderItemÿWhereÿOrderIdÿIN:orderId];
+ÿÿÿÿÿÿÿÿsystem.debug('ListÿofÿorderItemÿforÿdeletedÿordersÿ'+previousOrderItemsList);
+ÿÿÿÿÿÿÿÿList<Product2>ÿproList=ÿnewÿList<Product2>();
+ÿÿÿÿÿÿÿÿtry{
+ÿÿÿÿÿÿÿÿÿÿÿÿif(previousOrderItemsList!=Null){
+ÿÿÿÿÿÿÿÿÿÿÿÿfor(OrderItemÿco:previousOrderItemsList){
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿProduct2ÿp1=ÿnewÿProduct2();
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.Stock_Quantity__c=co.product2.Stock_Quantity__c+co.Quantity;
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿp1.id=co.product2Id;
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿSystem.debug('PreviousÿStockÿquantityÿ'+co.product2.Stock_Quantity__c);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿSystem.debug('currentÿStockÿquantityÿÿwhichÿisÿbeingÿupdatedÿ'+p1.Stock_Quantity__c);
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿproList.add(p1);
+ÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿif(proList.size()!=null){
+ÿÿÿÿÿÿÿÿÿÿÿÿupdateÿproList;
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿSystem.debug('Listÿofÿproduct2ÿwhichÿareÿupdatedÿ'+proList);
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿcatch(Exceptionÿe){
+ÿÿÿÿÿÿÿÿÿÿÿÿsystem.debug(e.getMessage());
+ÿÿÿÿÿÿÿÿ}
+ÿÿÿÿÿÿÿÿ}ÿÿÿÿ
+ÿÿÿÿ}
+ÿÿÿÿ
+}
+
+
+ 
+
+Test Class: - TestOrderCancelation
+
+@isTest
+publicÿclassÿTestOrderCancelationÿ{
+ÿÿÿ
+ÿpublicÿstaticÿtestMethodÿvoidÿtestQuantityOnOrderCancelation(){
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿAccount
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿAccountÿaÿ=ÿnewÿAccount();
+ÿÿÿÿÿÿÿÿa.Nameÿ=ÿ'TestÿAccount';
+ÿÿÿÿÿÿÿÿinsertÿa;
+ÿÿÿÿÿÿÿÿContractÿcont=ÿnewÿContract(AccountId=a.id,StartDate=system.today(),Status='Draft',ContractTerm=3);
+ÿÿÿÿÿÿÿÿinsertÿcont;
+ÿÿÿÿÿÿÿÿcont.Status='Activated';
+ÿÿÿÿÿÿÿÿupdateÿcont;
+ÿÿÿÿÿÿÿÿRoot_Location__cÿRL=ÿnewÿRoot_Location__c(Name='NewÿDelhiÿtoÿFaridabad');
+ÿÿÿÿÿÿÿÿinsertÿRL;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿProduct
+ÿÿÿÿÿÿÿÿProduct2ÿpÿ=ÿnewÿProduct2();
+ÿÿÿÿÿÿÿÿp.Nameÿ=ÿ'ÿTestÿProductÿ';
+ÿÿÿÿÿÿÿÿp.Description='TestÿProductÿEntryÿ1';
+ÿÿÿÿÿÿÿÿp.productCodeÿ=ÿ'ABC';
+ÿÿÿÿÿÿÿÿp.isActiveÿ=ÿtrue;
+ÿÿÿÿÿÿÿÿp.Stock_Quantity__c=100;
+ÿÿÿÿÿÿÿÿinsertÿp;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿPricebookEntry
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿPricebookEntryÿstandardPriceÿ=ÿnewÿPricebookEntry();
+ÿÿÿÿÿÿÿÿstandardPrice.Pricebook2Idÿ=ÿTest.getStandardPricebookId();
+ÿÿÿÿÿÿÿÿstandardPrice.Product2Idÿ=ÿp.Id;
+ÿÿÿÿÿÿÿÿstandardPrice.UnitPriceÿ=ÿ1;
+ÿÿÿÿÿÿÿÿstandardPrice.IsActiveÿ=ÿtrue;
+ÿÿÿÿÿÿÿ//ÿstandardPrice.UseStandardPriceÿ=ÿfalse;
+ÿÿÿÿÿÿÿÿinsertÿstandardPriceÿ;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿ//ÿInsertÿOrder
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿOrderÿoÿ=ÿnewÿOrder();
+ÿÿÿÿÿÿÿÿo.Nameÿ=ÿ'TestÿOrderÿ';
+ÿÿÿÿÿÿÿÿo.Statusÿ=ÿ'Draft';
+ÿÿÿÿÿÿÿÿo.EffectiveDateÿ=ÿsystem.today();
+ÿÿÿÿÿÿÿÿo.EndDateÿ=ÿsystem.today()ÿ+ÿ24;
+ÿÿÿÿÿÿÿÿo.AccountIdÿ=ÿa.id;
+ÿÿÿÿÿÿÿÿo.ContractId=cont.Id;
+ÿÿÿÿÿÿÿÿo.Paid_Amount__c=5;
+ÿÿÿÿÿÿÿo.Pricebook2Idÿ=ÿÿTest.getStandardPricebookId();
+ÿÿÿÿÿÿÿÿo.Root_Location__c=RL.Id;
+ÿÿÿÿÿÿÿÿÿÿÿÿinsertÿo;
+ÿÿÿÿÿ
+ÿÿÿÿÿ//ÿInsertÿOrderÿItem
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿOrderItemÿitemÿ=ÿnewÿOrderItem();
+ÿÿÿÿÿÿÿÿitem.OrderIdÿ=ÿo.id;
+ÿÿÿÿÿÿÿÿitem.Quantityÿ=ÿ5;
+ÿÿÿÿÿÿÿÿitem.UnitPriceÿ=ÿ67;
+ÿÿÿÿÿÿÿÿitem.Product2Idÿ=ÿp.id;
+ÿÿÿÿÿÿÿÿitem.ServiceDate=Date.today();
+ÿÿÿÿÿÿÿÿitem.EndDate=system.today()+5;
+ÿÿÿÿÿÿÿitem.PricebookEntryId=standardPrice.Id;
+ÿÿÿÿÿÿÿÿinsertÿitem;
+ÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿ//ÿOrderItemÿort=[selectÿid,Product2IdÿfromÿOrderItem];
+ÿÿÿÿÿÿÿo.Status='Cancel';
+ÿÿÿÿÿÿÿÿupdateÿo;
+ÿÿÿÿÿÿÿÿProduct2ÿppt=[Selectÿid,Stock_Quantity__cÿfromÿProduct2];
+ÿÿÿÿÿÿÿÿSystem.assertEquals(ppt.Stock_Quantity__c,ÿ115);
+ÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿ
+
+ÿ}
+}
+
+ 
+
+Custom object: - Custom_Order_Product__c
+Trigger: - UpdateUnitPrice	
+Note: - This trigger is used for fix the values from price book entry object 
+
+triggerÿUpdateUnitPriceÿonÿCustom_Order_Product__cÿ(ÿbeforeÿinsert,beforeÿupdate)ÿ{
+set<id>ÿsidÿ=ÿnewÿset<id>();
+
+for(Custom_Order_Product__cÿoo:trigger.new)
+{
+sid.add(oo.Product__c);
+
+}
+
+//Map<id,Price_Book_Entries__c>ÿpeÿ=ÿnewÿmap<id,Price_Book_Entries__c>([selectÿid,ÿUnitPrice__c,ÿProduct__cÿfromÿPrice_Book_Entries__cÿwhereÿProduct__cÿinÿ:sid]);
+List<Price_Book_Entries__c>ÿpe1ÿ=ÿ[selectÿid,UnitPrice__c,Before_GST__cÿÿ,Discount_In_Rupees__c,Discount_Percentage__cÿfromÿPrice_Book_Entries__cÿwhereÿProduct1__cÿinÿ:sid];
+ÿÿÿÿSystem.debug('ListÿofÿPrice_Book_Entries__c'+pe1);
+for(Custom_Order_Product__cÿoo:trigger.new)
+{
+ÿ//Price_Book_Entries__cÿpe2=pe.get(oo.Product__c);
+ÿÿÿÿfor(Price_Book_Entries__cÿpe2:pe1){
+
+ÿÿÿÿÿÿÿÿoo.Unit_Price__cÿ=ÿpe2.UnitPrice__c;
+ÿÿÿÿÿÿÿÿoo.Discount_In_Rupees__cÿ=ÿpe2.Discount_In_Rupees__c;
+ÿÿÿÿÿÿÿÿoo.Discount_Percentage__cÿ=ÿpe2.Discount_Percentage__c;
+ÿÿÿÿÿÿÿÿoo.Before_GST__cÿ=ÿpe2.Before_GST__c;
+ÿÿÿÿÿÿÿÿ
+ÿÿÿÿ}
+}
+}
