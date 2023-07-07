@@ -1,0 +1,38 @@
+public class OrderHandler{
+    public static void stockQuantity(List<Order> orderList, Map<Id,Order> oldMap){
+            List<id> orderId = new List<id>();
+   
+        for(Order co:orderList){
+            if(co.Status=='Cancel'){
+            orderId.add(co.Id);
+        } 
+        }
+        if(orderId!=Null){
+        System.debug('Orders which are getting deleted '+orderId);
+        List<OrderItem> previousOrderItemsList=[select Id, Quantity,Product2Id, OrderId, Product2.Stock_Quantity__c from OrderItem Where OrderId IN:orderId];
+        system.debug('List of orderItem for deleted orders '+previousOrderItemsList);
+        List<Product2> proList= new List<Product2>();
+        try{
+            if(previousOrderItemsList!=Null){
+            for(OrderItem co:previousOrderItemsList){
+                Product2 p1= new Product2();
+                p1.Stock_Quantity__c=co.product2.Stock_Quantity__c+co.Quantity;
+                p1.id=co.product2Id;
+                System.debug('Previous Stock quantity '+co.product2.Stock_Quantity__c);
+                System.debug('current Stock quantity  which is being updated '+p1.Stock_Quantity__c);
+              proList.add(p1);
+            }
+                if(proList.size()!=null){
+            update proList;
+                }
+            System.debug('List of product2 which are updated '+proList);
+        }
+        }
+            
+        catch(Exception e){
+            system.debug(e.getMessage());
+        }
+        }    
+    }
+    
+}
