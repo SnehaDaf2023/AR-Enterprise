@@ -1,0 +1,25 @@
+trigger UpdateUnitPrice on Custom_Order_Product__c ( before insert,before update) {
+set<id> sid = new set<id>();
+
+for(Custom_Order_Product__c oo:trigger.new)
+{
+sid.add(oo.Product__c);
+
+}
+
+//Map<id,Price_Book_Entries__c> pe = new map<id,Price_Book_Entries__c>([select id, UnitPrice__c, Product__c from Price_Book_Entries__c where Product__c in :sid]);
+List<Price_Book_Entries__c> pe1 = [select id,UnitPrice__c,Before_GST__c  ,Discount_In_Rupees__c,Discount_Percentage__c from Price_Book_Entries__c where Product1__c in :sid];
+    System.debug('List of Price_Book_Entries__c'+pe1);
+for(Custom_Order_Product__c oo:trigger.new)
+{
+ //Price_Book_Entries__c pe2=pe.get(oo.Product__c);
+    for(Price_Book_Entries__c pe2:pe1){
+
+        oo.Unit_Price__c = pe2.UnitPrice__c;
+        oo.Discount_In_Rupees__c = pe2.Discount_In_Rupees__c;
+        oo.Discount_Percentage__c = pe2.Discount_Percentage__c;
+        oo.Before_GST__c = pe2.Before_GST__c;
+        
+    }
+}
+}
