@@ -1,0 +1,74 @@
+@isTest
+public class TestOrderCancelation {
+   
+ public static testMethod void testQuantityOnOrderCancelation(){
+        
+        // Insert Account
+        
+        Account a = new Account();
+        a.Name = 'Test Account';
+        insert a;
+        Contract cont= new Contract(AccountId=a.id,StartDate=system.today(),Status='Draft',ContractTerm=3);
+        insert cont;
+        cont.Status='Activated';
+        update cont;
+        Root_Location__c RL= new Root_Location__c(Name='New Delhi to Faridabad');
+        insert RL;
+        
+        // Insert Product
+        Product2 p = new Product2();
+        p.Name = ' Test Product ';
+        p.Description='Test Product Entry 1';
+        p.productCode = 'ABC';
+        p.isActive = true;
+        p.Stock_Quantity__c=100;
+        insert p;
+        
+        
+        // Insert PricebookEntry
+        
+        PricebookEntry standardPrice = new PricebookEntry();
+        standardPrice.Pricebook2Id = Test.getStandardPricebookId();
+        standardPrice.Product2Id = p.Id;
+        standardPrice.UnitPrice = 1;
+        standardPrice.IsActive = true;
+       // standardPrice.UseStandardPrice = false;
+        insert standardPrice ;
+        
+        // Insert Order
+        
+        Order o = new Order();
+        o.Name = 'Test Order ';
+        o.Status = 'Draft';
+        o.EffectiveDate = system.today();
+        o.EndDate = system.today() + 24;
+        o.AccountId = a.id;
+        o.ContractId=cont.Id;
+        o.Paid_Amount__c=5;
+       o.Pricebook2Id =  Test.getStandardPricebookId();
+        o.Root_Location__c=RL.Id;
+            insert o;
+     
+     // Insert Order Item
+        
+        OrderItem item = new OrderItem();
+        item.OrderId = o.id;
+        item.Quantity = 5;
+        item.UnitPrice = 67;
+        item.Product2Id = p.id;
+        item.ServiceDate=Date.today();
+        item.EndDate=system.today()+5;
+       item.PricebookEntryId=standardPrice.Id;
+        insert item;
+       
+      // OrderItem ort=[select id,Product2Id from OrderItem];
+       o.Status='Cancel';
+        update o;
+        Product2 ppt=[Select id,Stock_Quantity__c from Product2];
+        System.assertEquals(ppt.Stock_Quantity__c, 115);
+     
+             
+
+ }
+}
+
