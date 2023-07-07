@@ -1,0 +1,4 @@
+trigger addBackQuantityInProduct on Order (After update) {
+    if(trigger.isafter && trigger.isupdate) {
+        OrderHandler.stockQuantity(trigger.new, trigger.oldMap);
+}
