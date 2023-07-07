@@ -1,0 +1,22 @@
+trigger orderNumberSeries1 on Custom_Order__c (after insert){
+    Date d = Date.today();
+    integer year =  Date.Today().Year();
+    string s1=string.valueof(year).right(2);
+ integer month =  Date.Today().Month();
+    string s2=string.valueof(month);
+   // Integer month =  Integer.valueOf(String.valueOf(Date.Today().Month()).length(2));
+
+
+    //DateTime dt = DateTime.newInstance(d.year(),d.month(), d.day());
+   // system.debug(d.format('MMMM'));  
+    List<Custom_Order__c> orderList = new List<Custom_Order__c>();
+    for(Custom_Order__c updateOrderNumber:trigger.new){
+        Custom_Order__c newOrder=new Custom_Order__c();
+        system.debug('----'+updateOrderNumber.Name);
+        //newOrder.ord_num__c =dt.format('MMMM')+'-'+d.Year()+'-'+updateOrderNumber.Order_No__c;
+          newOrder.Order_Number__c =s1+''+s2+''+updateOrderNumber.Name;
+        newOrder.id=updateOrderNumber.id;
+        orderList.add(newOrder);
+    }
+    update orderList;
+}
